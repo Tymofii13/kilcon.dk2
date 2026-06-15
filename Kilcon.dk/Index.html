@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KILCON — Construction · Contracting · Consulting</title>
+<meta name="description" content="KILCON udfører byggeprojekter for private og erhverv. Projektleder og ingeniør i én — god dialog, optimerede løsninger og effektiv styring på hele Sjælland." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#0a0a0b;
+  --coal:#101012;
+  --panel:#16161a;
+  --graphite:#1f1f24;
+  --steel:#2a2a30;
+  --ash:#87878d;
+  --mist:#b7b7bd;
+  --bone:#f3f1ec;
+  --white:#ffffff;
+  --line:rgba(243,241,236,.12);
+  --line-soft:rgba(243,241,236,.07);
+  --hair:rgba(243,241,236,.22);
+
+  --ff-display:"Bricolage Grotesque",-apple-system,Segoe UI,sans-serif;
+  --ff-body:"Inter",-apple-system,Segoe UI,sans-serif;
+  --ff-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+
+  --pad:clamp(1.25rem,5vw,6rem);
+  --maxw:1320px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink);
+  color:var(--bone);
+  font-family:var(--ff-body);
+  font-size:17px;
+  line-height:1.6;
+  font-weight:400;
+  letter-spacing:.005em;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.modal-open{overflow:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+ul{list-style:none}
+
+:focus-visible{outline:2px solid var(--bone);outline-offset:3px;border-radius:2px}
+
+/* ---------- PAGE-LOAD BLUR REVEAL ---------- */
+.stage{
+  opacity:0;
+  filter:blur(26px);
+  transform:scale(1.012);
+  transition:opacity 1.1s var(--ease),filter 1.2s var(--ease),transform 1.2s var(--ease);
+  will-change:opacity,filter,transform;
+}
+.stage.is-ready{opacity:1;filter:blur(0);transform:none}
+
+/* ---------- SHARED BITS ---------- */
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
+
+/* dimension-line eyebrow — the signature device */
+.eyebrow{
+  font-family:var(--ff-mono);
+  font-size:.72rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--ash);
+  display:inline-flex;
+  align-items:center;
+  gap:.85rem;
+}
+.eyebrow::before{
+  content:"";
+  width:clamp(28px,4vw,56px);
+  height:1px;
+  background:var(--hair);
+  position:relative;
+}
+.eyebrow.tick::before{
+  background:
+    linear-gradient(var(--hair),var(--hair)) left/1px 7px no-repeat,
+    linear-gradient(var(--hair),var(--hair)) right/1px 7px no-repeat,
+    linear-gradient(var(--hair),var(--hair)) center/100% 1px no-repeat;
+}
+
+h1,h2,h3,h4{font-family:var(--ff-display);font-weight:700;line-height:1.02;letter-spacing:-.02em}
+
+.display-xl{font-size:clamp(2.6rem,7vw,6rem);font-weight:800;letter-spacing:-.035em}
+.display-l{font-size:clamp(2.1rem,4.6vw,3.9rem);font-weight:700}
+.display-m{font-size:clamp(1.55rem,2.6vw,2.3rem)}
+
+.lede{color:var(--mist);font-size:clamp(1.02rem,1.4vw,1.18rem);max-width:54ch}
+
+.section-index{font-family:var(--ff-mono);font-size:.72rem;color:var(--ash);letter-spacing:.18em}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:.75rem;
+  font-family:var(--ff-mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:1.05rem 1.9rem;border-radius:2px;
+  transition:transform .5s var(--ease),background .35s,color .35s,border-color .35s;
+}
+.btn .arr{transition:transform .45s var(--ease)}
+.btn:hover .arr{transform:translateX(5px)}
+.btn-primary{background:var(--bone);color:var(--ink);font-weight:500}
+.btn-primary:hover{background:var(--white);transform:translateY(-2px)}
+.btn-ghost{border:1px solid var(--line);color:var(--bone)}
+.btn-ghost:hover{border-color:var(--hair);background:rgba(243,241,236,.04);transform:translateY(-2px)}
+
+/* ---------- HEADER ---------- */
+.site-head{
+  position:fixed;inset:0 0 auto 0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem var(--pad);
+  transition:background .4s,backdrop-filter .4s,border-color .4s,padding .4s;
+  border-bottom:1px solid transparent;
+}
+.site-head.scrolled{
+  background:rgba(10,10,11,.72);
+  backdrop-filter:blur(14px);
+  border-bottom-color:var(--line-soft);
+  padding-block:1rem;
+}
+.brand{font-family:var(--ff-display);font-weight:800;font-size:1.35rem;letter-spacing:.08em;display:flex;align-items:center;gap:.6rem}
+.brand .dot{width:7px;height:7px;background:var(--bone);border-radius:50%}
+.nav{display:flex;align-items:center;gap:2.2rem}
+.nav a{font-size:.82rem;letter-spacing:.04em;color:var(--mist);transition:color .3s}
+.nav a:hover{color:var(--bone)}
+.nav .head-cta{font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);padding:.7rem 1.2rem;border-radius:2px;color:var(--bone)}
+.nav .head-cta:hover{border-color:var(--hair);background:rgba(243,241,236,.04)}
+.nav-links{display:flex;gap:2.2rem}
+.burger{display:none}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
+.hero video,.hero .video-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.hero .video-fallback{z-index:-3;background:radial-gradient(120% 80% at 70% 10%,#26262b,#0a0a0b 70%)}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(180deg,rgba(10,10,11,.55) 0%,rgba(10,10,11,.25) 35%,rgba(10,10,11,.85) 100%),
+    linear-gradient(90deg,rgba(10,10,11,.7) 0%,rgba(10,10,11,0) 55%);
+}
+.hero-inner{padding:8rem var(--pad) clamp(3rem,7vh,6rem);width:100%;max-width:var(--maxw);margin-inline:auto}
+.hero-eyebrow{margin-bottom:1.8rem;color:var(--mist)}
+.hero h1{max-width:18ch;margin-bottom:1.8rem}
+.hero .lede{margin-bottom:2.6rem;color:#d8d8da}
+.hero-actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+.scroll-cue{
+  position:absolute;bottom:2rem;right:var(--pad);z-index:1;
+  font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.2em;color:var(--ash);
+  writing-mode:vertical-rl;display:flex;align-items:center;gap:1rem;
+}
+.scroll-cue::after{content:"";width:1px;height:46px;background:linear-gradient(var(--hair),transparent)}
+
+/* corner measurement frame on hero */
+.hero-meta{position:absolute;top:7rem;right:var(--pad);z-index:1;text-align:right;font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.12em;color:var(--ash);line-height:1.9}
+.hero-meta span{color:var(--mist)}
+
+/* ---------- SECTION FRAME ---------- */
+.band{padding-block:clamp(5rem,11vh,9rem);position:relative}
+.band.alt{background:var(--coal)}
+.band-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.5rem;margin-bottom:clamp(2.5rem,5vw,4rem)}
+.band-head .titles{max-width:46ch}
+.band-head .eyebrow{margin-bottom:1.3rem}
+
+/* ---------- ABOUT (asymmetric) ---------- */
+.about-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,5rem);align-items:center}
+.about-figure{position:relative}
+.about-figure img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:3px;filter:grayscale(.25) contrast(1.05)}
+.about-figure .frame-tag{
+  position:absolute;left:-1px;bottom:-1px;background:var(--ink);
+  font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.14em;color:var(--mist);
+  padding:.7rem 1.1rem;border:1px solid var(--line);border-radius:0 3px 0 3px;
+}
+.about-copy .eyebrow{margin-bottom:1.4rem}
+.about-copy h2{margin-bottom:1.4rem;max-width:14ch}
+.about-copy .lede{margin-bottom:2.4rem}
+.about-features{display:grid;grid-template-columns:1fr 1fr;gap:.2rem 2rem;margin-bottom:2.6rem;border-top:1px solid var(--line)}
+.about-features li{
+  display:flex;gap:.85rem;align-items:flex-start;
+  padding:1.1rem 0;border-bottom:1px solid var(--line-soft);font-size:.98rem;color:var(--mist);
+}
+.about-features li .n{font-family:var(--ff-mono);font-size:.7rem;color:var(--ash);padding-top:.2rem}
+
+/* ---------- 4 FEATURE GRID (asymmetric, circular icons) ---------- */
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:1px;
+  background:var(--line-soft);
+  border:1px solid var(--line-soft);
+  border-radius:3px;overflow:hidden;
+}
+.feature-card{
+  background:var(--ink);
+  padding:clamp(1.6rem,2.6vw,2.6rem);
+  display:flex;flex-direction:column;gap:1.1rem;
+  min-height:230px;transition:background .4s;
+}
+.band.alt .feature-card{background:var(--coal)}
+.feature-card:hover{background:var(--panel)}
+.feature-card:nth-child(1){grid-column:span 5}
+.feature-card:nth-child(2){grid-column:span 7}
+.feature-card:nth-child(3){grid-column:span 7}
+.feature-card:nth-child(4){grid-column:span 5}
+.feature-icon{
+  width:58px;height:58px;aspect-ratio:1/1;border-radius:50%;object-fit:cover;
+  background:var(--steel);border:1px solid var(--line);filter:grayscale(.4);
+}
+.feature-card h3{font-size:1.25rem;font-weight:700}
+.feature-card p{color:var(--ash);font-size:.95rem}
+.feature-card .fnum{font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.16em;color:var(--ash);margin-top:auto}
+
+/* ---------- PROCESS ---------- */
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line)}
+.step{padding:2.4rem 1.6rem 2.4rem 0;position:relative;border-right:1px solid var(--line);padding-left:1.6rem}
+.step:first-child{padding-left:0}
+.step:last-child{border-right:none}
+.step .trin{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.16em;color:var(--ash);margin-bottom:2.2rem;display:block}
+.step .stepnum{font-family:var(--ff-display);font-weight:800;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;letter-spacing:-.04em;margin-bottom:1.1rem;color:var(--bone)}
+.step h3{font-size:1.18rem;margin-bottom:.7rem}
+.step p{color:var(--ash);font-size:.93rem}
+.step::before{content:"";position:absolute;top:0;left:0;width:34px;height:2px;background:var(--bone)}
+.step:first-child::before{left:0}
+
+/* ---------- TESTIMONIAL ---------- */
+.quote-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.quote-figure img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:3px;filter:grayscale(.3)}
+.stars{display:flex;gap:.35rem;margin-bottom:1.8rem}
+.stars svg{width:22px;height:22px;fill:var(--bone)}
+.quote-text{font-family:var(--ff-display);font-weight:600;font-size:clamp(1.4rem,2.5vw,2rem);line-height:1.3;letter-spacing:-.015em;margin-bottom:2rem}
+.quote-author{font-family:var(--ff-mono);font-size:.78rem;letter-spacing:.1em;color:var(--ash)}
+.quote-author b{color:var(--bone);font-weight:500}
+
+/* ---------- REFERENCES ---------- */
+.ref-hero{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:end;margin-bottom:clamp(3rem,6vw,5rem)}
+.ref-hero img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:3px;filter:grayscale(.25)}
+.ref-hero .titles h2{margin-bottom:1.2rem;max-width:12ch}
+.ref-subhead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2rem;border-bottom:1px solid var(--line);padding-bottom:1.2rem}
+.ref-subhead h3{font-size:1.5rem}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.proj-card{display:block;border:1px solid var(--line-soft);border-radius:3px;overflow:hidden;background:var(--coal);transition:border-color .4s,transform .5s var(--ease)}
+.proj-card:hover{border-color:var(--hair);transform:translateY(-4px)}
+.proj-card .pc-img{overflow:hidden}
+.proj-card img{width:100%;aspect-ratio:4/3;object-fit:cover;filter:grayscale(.3);transition:transform .8s var(--ease),filter .5s}
+.proj-card:hover img{transform:scale(1.05);filter:grayscale(0)}
+.proj-card .pc-body{padding:1.5rem}
+.proj-card .pc-date{font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.1em;color:var(--ash);margin-bottom:.7rem;display:block}
+.proj-card h4{font-size:1.22rem;margin-bottom:1.3rem}
+.proj-card .pc-link{font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);display:inline-flex;gap:.5rem;align-items:center}
+.proj-card:hover .pc-link{color:var(--bone)}
+
+/* ---------- FAQ ---------- */
+.faq-grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:clamp(2rem,5vw,5rem);align-items:start}
+.faq-list{border-top:1px solid var(--line)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{
+  width:100%;display:flex;justify-content:space-between;align-items:center;gap:2rem;
+  padding:1.7rem 0;text-align:left;font-family:var(--ff-display);font-weight:600;font-size:clamp(1.1rem,1.7vw,1.35rem);
+}
+.faq-q .qx{font-family:var(--ff-mono);font-size:1.4rem;color:var(--ash);transition:transform .45s var(--ease),color .3s;flex:none}
+.faq-item.open .qx{transform:rotate(45deg);color:var(--bone)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .55s var(--ease)}
+.faq-a p{color:var(--ash);padding-bottom:1.7rem;max-width:58ch}
+.faq-side .eyebrow{margin-bottom:1.3rem}
+.faq-side h2{margin-bottom:1.2rem}
+.faq-side p{color:var(--ash)}
+
+/* ---------- FOOTER + FORM ---------- */
+.contact{position:relative;isolation:isolate;overflow:hidden}
+.contact .bg-img,.contact .bg-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(.5) brightness(.5)}
+.contact .bg-fallback{z-index:-3;background:radial-gradient(120% 90% at 30% 0%,#222 0,#0a0a0b 70%)}
+.contact::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,10,11,.7),rgba(10,10,11,.92))}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2.5rem,6vw,6rem);padding-block:clamp(5rem,11vh,9rem);align-items:start}
+.contact-intro .eyebrow{margin-bottom:1.4rem}
+.contact-intro h2{margin-bottom:1.5rem;max-width:12ch}
+.contact-intro .lede{margin-bottom:2.5rem}
+.contact-list{font-family:var(--ff-mono);font-size:.82rem;letter-spacing:.04em;color:var(--mist);line-height:2.1;border-top:1px solid var(--line);padding-top:1.6rem}
+.contact-list span{color:var(--ash)}
+
+.lead-form{background:rgba(16,16,18,.72);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:4px;padding:clamp(1.6rem,3vw,2.6rem)}
+.lead-form h3{font-size:1.4rem;margin-bottom:1.8rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);margin-bottom:.55rem}
+.field input,.field textarea{
+  width:100%;background:rgba(10,10,11,.5);border:1px solid var(--line);border-radius:2px;
+  color:var(--bone);font-family:var(--ff-body);font-size:.97rem;padding:.85rem .95rem;transition:border-color .3s,background .3s;
+}
+.field textarea{resize:vertical;min-height:120px}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--hair);background:rgba(10,10,11,.75)}
+.lead-form .btn-primary{width:100%;justify-content:center;margin-top:.6rem}
+.form-note{font-family:var(--ff-mono);font-size:.68rem;color:var(--ash);margin-top:1rem;text-align:center;letter-spacing:.04em}
+
+/* footer base */
+.foot-base{border-top:1px solid var(--line);padding-block:clamp(2.5rem,5vw,4rem);position:relative;z-index:1}
+.foot-top{display:grid;grid-template-columns:2fr 1fr;gap:2rem;margin-bottom:3rem}
+.foot-top p{color:var(--ash);max-width:48ch;font-size:.95rem}
+.foot-brand{font-family:var(--ff-display);font-weight:800;font-size:2rem;letter-spacing:.06em;margin-bottom:1.2rem}
+.socials{display:flex;gap:1.4rem;justify-content:flex-end;align-items:flex-start}
+.socials a{font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);transition:color .3s}
+.socials a:hover{color:var(--bone)}
+.foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-top:1px solid var(--line-soft);padding-top:1.8rem;font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.08em;color:var(--ash)}
+
+/* ---------- COOKIE MODAL ---------- */
+.cookie-overlay{
+  position:fixed;inset:0;z-index:120;
+  background:rgba(6,6,7,.72);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:1.25rem;
+  opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility .5s;
+}
+.cookie-overlay.show{opacity:1;visibility:visible}
+.cookie{
+  width:100%;max-width:560px;max-height:90svh;display:flex;flex-direction:column;
+  background:var(--coal);border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  transform:translateY(18px) scale(.98);transition:transform .6s var(--ease);
+  box-shadow:0 40px 120px rgba(0,0,0,.7);
+}
+.cookie-overlay.show .cookie{transform:none}
+.cookie-head{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.6rem .2rem}
+.cookie-head .ck-brand{font-family:var(--ff-display);font-weight:800;letter-spacing:.08em;font-size:1.1rem}
+.cookie-head .ck-flag{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.12em;color:var(--ash)}
+.cookie-tabs{display:flex;gap:.4rem;padding:1rem 1.6rem 0;border-bottom:1px solid var(--line)}
+.cookie-tab{
+  font-family:var(--ff-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ash);padding:.75rem .9rem;position:relative;transition:color .3s;
+}
+.cookie-tab::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--bone);transform:scaleX(0);transition:transform .35s var(--ease)}
+.cookie-tab[aria-selected="true"]{color:var(--bone)}
+.cookie-tab[aria-selected="true"]::after{transform:scaleX(1)}
+.cookie-body{padding:1.5rem 1.6rem;overflow-y:auto;flex:1}
+.cookie-body p{font-size:.88rem;color:var(--mist);line-height:1.7}
+.cookie-body p a{color:var(--bone);text-decoration:underline;text-underline-offset:3px}
+.panel{display:none}
+.panel.active{display:block}
+
+.toggles{margin-top:1.4rem;display:flex;flex-direction:column;gap:.2rem}
+.toggle-row{display:grid;grid-template-columns:auto 1fr;gap:1rem;padding:1rem 0;border-top:1px solid var(--line-soft)}
+.toggle-row:first-child{border-top:none}
+.toggle-row .meta strong{display:block;font-family:var(--ff-body);font-weight:600;font-size:.92rem;margin-bottom:.3rem;color:var(--bone)}
+.toggle-row .meta span{font-size:.8rem;color:var(--ash);line-height:1.6}
+.switch{position:relative;width:46px;height:26px;flex:none}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.switch .track{position:absolute;inset:0;background:var(--steel);border-radius:99px;transition:background .35s;border:1px solid var(--line)}
+.switch .track::before{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;background:var(--mist);border-radius:50%;transition:transform .35s var(--ease),background .35s}
+.switch input:checked + .track{background:var(--bone)}
+.switch input:checked + .track::before{transform:translateX(20px);background:var(--ink)}
+.switch input:disabled{cursor:not-allowed}
+.switch input:disabled + .track{opacity:.85}
+.switch input:focus-visible + .track{outline:2px solid var(--bone);outline-offset:2px}
+
+.ck-footnote{font-family:var(--ff-mono);font-size:.66rem;color:var(--ash);margin-top:1.4rem;letter-spacing:.03em}
+
+/* details tab list */
+.ck-detail-group{margin-bottom:1.3rem}
+.ck-detail-group h5{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);margin-bottom:.6rem;padding-bottom:.5rem;border-bottom:1px solid var(--line-soft)}
+.ck-detail-group ul li{display:flex;justify-content:space-between;gap:1rem;font-family:var(--ff-mono);font-size:.74rem;color:var(--ash);padding:.4rem 0}
+.ck-detail-group ul li code{color:var(--mist)}
+
+.cookie-actions{display:flex;flex-direction:column;gap:.6rem;padding:1.2rem 1.6rem 1.6rem;border-top:1px solid var(--line)}
+.cookie-actions button{width:100%;justify-content:center}
+.ck-btn{font-family:var(--ff-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;padding:.95rem 1rem;border-radius:2px;display:flex;align-items:center;justify-content:center;transition:background .3s,border-color .3s,color .3s,transform .4s}
+.ck-allow{background:var(--bone);color:var(--ink);font-weight:600}
+.ck-allow:hover{background:var(--white);transform:translateY(-1px)}
+.ck-selected{border:1px solid var(--line);color:var(--bone)}
+.ck-selected:hover{border-color:var(--hair);background:rgba(243,241,236,.04)}
+.ck-deny{color:var(--ash);letter-spacing:.12em}
+.ck-deny:hover{color:var(--bone)}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,140%);z-index:130;background:var(--bone);color:var(--ink);font-family:var(--ff-mono);font-size:.76rem;letter-spacing:.06em;padding:.9rem 1.4rem;border-radius:3px;transition:transform .55s var(--ease)}
+.toast.show{transform:translate(-50%,0)}
+
+/* ---------- reveal on scroll ---------- */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1000px){
+  .about-grid,.quote-grid,.ref-hero,.faq-grid,.contact-grid{grid-template-columns:1fr}
+  .quote-figure{max-width:360px}
+  .process{grid-template-columns:1fr 1fr}
+  .step{border-right:none;border-bottom:1px solid var(--line);padding-right:1.4rem}
+  .step:nth-child(odd){padding-left:0}
+  .step:nth-child(even){padding-left:1.6rem;border-left:1px solid var(--line)}
+  .foot-top{grid-template-columns:1fr}
+  .socials{justify-content:flex-start}
+}
+@media (max-width:760px){
+  .nav-links,.head-cta{display:none}
+  .nav .head-cta.mobile-show{display:inline-flex}
+  .cards{grid-template-columns:1fr}
+  .feature-card:nth-child(n){grid-column:span 12}
+  .about-features{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .process{grid-template-columns:1fr}
+  .step{padding-left:0 !important;border-left:none !important}
+  .hero-meta{display:none}
+  .ref-subhead{flex-wrap:wrap;gap:1rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important}
+  .stage{filter:none;transform:none;transition:opacity .4s}
+  .reveal{transition:opacity .5s}
+  .reveal,.stage{transform:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== COOKIE CONSENT ===================== -->
+<div class="cookie-overlay" id="cookieOverlay" role="dialog" aria-modal="true" aria-labelledby="ckTitle">
+  <div class="cookie">
+    <div class="cookie-head">
+      <span class="ck-brand" id="ckTitle">KILCON</span>
+      <span class="ck-flag">Cookie-samtykke · DK</span>
+    </div>
+
+    <div class="cookie-tabs" role="tablist" aria-label="Cookie indstillinger">
+      <button class="cookie-tab" role="tab" id="tab-samtykke" aria-controls="panel-samtykke" aria-selected="true" data-tab="samtykke">Samtykke</button>
+      <button class="cookie-tab" role="tab" id="tab-detaljer" aria-controls="panel-detaljer" aria-selected="false" data-tab="detaljer">Detaljer</button>
+      <button class="cookie-tab" role="tab" id="tab-om" aria-controls="panel-om" aria-selected="false" data-tab="om">Om</button>
+    </div>
+
+    <div class="cookie-body">
+      <!-- SAMTYKKE -->
+      <section class="panel active" id="panel-samtykke" role="tabpanel" aria-labelledby="tab-samtykke">
+        <p>Denne hjemmeside bruger cookies. Vi bruger cookies til at tilpasse vores indhold og annoncer, til at vise dig funktioner til sociale medier og til at analysere vores trafik. Vi deler også oplysninger om din brug af vores hjemmeside med vores partnere inden for sociale medier, annonceringspartnere og analysepartnere. Vi indsamler data i overensstemmelse med Googles Business Data Responsibility Site. Vores partnere kan kombinere disse data med andre oplysninger, du har givet dem, eller som de har indsamlet fra din brug af deres tjenester. <a href="#">Se Cookie &amp; Privatlivspolitik her.</a></p>
+
+        <div class="toggles">
+          <div class="toggle-row">
+            <label class="switch"><input type="checkbox" checked disabled aria-label="Nødvendig (altid aktiv)"><span class="track"></span></label>
+            <div class="meta"><strong>Nødvendig</strong><span>Nødvendige cookies hjælper med at gøre en hjemmeside brugbar ved at aktivere grundlæggende funktioner såsom side-navigation og adgang til sikre områder af hjemmesiden. Hjemmesiden kan ikke fungere ordentligt uden disse cookies.</span></div>
+          </div>
+          <div class="toggle-row">
+            <label class="switch"><input type="checkbox" data-cat="praef" aria-label="Præferencer"><span class="track"></span></label>
+            <div class="meta"><strong>Præferencer</strong><span>Præference cookies gør det muligt for en hjemmeside at huske oplysninger, der ændrer den måde hjemmesiden ser ud eller opfører sig på. F.eks. dit foretrukne sprog, eller den region, du befinder dig i.</span></div>
+          </div>
+          <div class="toggle-row">
+            <label class="switch"><input type="checkbox" data-cat="stat" aria-label="Statistik"><span class="track"></span></label>
+            <div class="meta"><strong>Statistik</strong><span>Statistiske cookies giver hjemmesideejere indsigt i brugernes interaktion med hjemmesiden, ved at indsamle og rapportere oplysninger anonymt.</span></div>
+          </div>
+          <div class="toggle-row">
+            <label class="switch"><input type="checkbox" data-cat="mark" aria-label="Marketing"><span class="track"></span></label>
+            <div class="meta"><strong>Marketing</strong><span>Marketing cookies bruges til at spore brugere på tværs af websites. Hensigten er at vise annoncer, der er relevante og engagerende for den enkelte bruger, og dermed mere værdifulde for udgivere og tredjeparts-annoncører.</span></div>
+          </div>
+          <div class="toggle-row">
+            <label class="switch"><input type="checkbox" data-cat="ukl" aria-label="Uklassificeret"><span class="track"></span></label>
+            <div class="meta"><strong>Uklassificeret</strong><span>Uklassificerede cookies er cookies, som vi er i færd med at klassificere sammen med udbyderne af de enkelte cookies.</span></div>
+          </div>
+        </div>
+
+        <p class="ck-footnote">Cookiedeklarationen er sidst opdateret d. 10.06.2026 af Cookiebot.</p>
+      </section>
+
+      <!-- DETALJER -->
+      <section class="panel" id="panel-detaljer" role="tabpanel" aria-labelledby="tab-detaljer" hidden>
+        <div class="ck-detail-group">
+          <h5>Nødvendig (3)</h5>
+          <ul>
+            <li><code>CookieConsent</code><span>Cookiebot · 1 år</span></li>
+            <li><code>__cf_bm</code><span>Cloudflare · 1 dag</span></li>
+            <li><code>PHPSESSID</code><span>kilcon.dk · Session</span></li>
+          </ul>
+        </div>
+        <div class="ck-detail-group">
+          <h5>Præferencer (1)</h5>
+          <ul>
+            <li><code>lang</code><span>kilcon.dk · Session</span></li>
+          </ul>
+        </div>
+        <div class="ck-detail-group">
+          <h5>Statistik (2)</h5>
+          <ul>
+            <li><code>_ga</code><span>Google · 2 år</span></li>
+            <li><code>_ga_#</code><span>Google · 2 år</span></li>
+          </ul>
+        </div>
+        <div class="ck-detail-group">
+          <h5>Marketing (2)</h5>
+          <ul>
+            <li><code>_fbp</code><span>Meta Platforms · 3 mdr.</span></li>
+            <li><code>IDE</code><span>Google · 1 år</span></li>
+          </ul>
+        </div>
+        <div class="ck-detail-group">
+          <h5>Uklassificeret (0)</h5>
+          <ul>
+            <li><code>Ingen registreret</code><span>—</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- OM -->
+      <section class="panel" id="panel-om" role="tabpanel" aria-labelledby="tab-om" hidden>
+        <p>Cookies er små tekstfiler, som kan bruges af websteder til at gøre en brugers oplevelse mere effektiv. Loven fastslår, at vi kan gemme cookies på din enhed, hvis de er strengt nødvendige for at sikre leveringen af den tjeneste, du udtrykkeligt har anmodet om at bruge. For alle andre typer cookies har vi brug for dit samtykke.</p>
+        <p style="margin-top:1rem">Denne hjemmeside anvender forskellige typer af cookies. Nogle cookies sættes af tredjepartstjenester, der vises på vores sider. Du kan til enhver tid ændre eller tilbagetrække dit samtykke fra Cookiedeklarationen på vores hjemmeside. Læs mere om, hvem vi er, hvordan du kan kontakte os, og hvordan vi behandler personoplysninger, i vores Privatlivspolitik.</p>
+        <p style="margin-top:1rem">Dit samtykke gælder for følgende domæne: <a href="#">kilcon.dk</a>. Dit aktuelle tilstand: Ingen givet. Dit samtykke-ID gemmes lokalt og kan til enhver tid trækkes tilbage.</p>
+      </section>
+    </div>
+
+    <div class="cookie-actions">
+      <button class="ck-btn ck-allow" id="ckAllowAll">Tillad alle</button>
+      <button class="ck-btn ck-selected" id="ckAllowSelected">Tillad valgte</button>
+      <button class="ck-btn ck-deny" id="ckDeny">Afvis</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===================== SITE ===================== -->
+<div class="stage" id="stage">
+
+<header class="site-head" id="siteHead">
+  <a href="#top" class="brand"><span class="dot"></span>KILCON</a>
+  <nav class="nav" aria-label="Primær">
+    <div class="nav-links">
+      <a href="#about">Om os</a>
+      <a href="#process">Arbejdsproces</a>
+      <a href="#references">Referencer</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#contact" class="head-cta mobile-show">Modtag et tilbud</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <video id="heroVideo" autoplay muted loop playsinline preload="metadata">
+      <source src="videobomba.MP4" type="video/mp4" />
+    </video>
+    <div class="video-fallback" aria-hidden="true"></div>
+
+    <div class="hero-meta" aria-hidden="true">
+      EST. SJÆLLAND<br>
+      <span>55.5837° N</span><br>
+      <span>12.0186° E</span><br>
+      GREVE · DK
+    </div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow eyebrow tick">Construction • Contracting • Consulting</p>
+      <h1 class="display-xl">Skal vi hjælpe dig med dit byggeprojekt?</h1>
+      <p class="lede">Hos KILCON tilbyder vi udførsel af byggeprojekter for både private og erhvervskunder. Vi har mange års erfaring med styring af byggeprojekter, som gør at vi løser udfordringerne før de bliver til problemer.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Modtag et tilbud <span class="arr">→</span></a>
+        <a href="#references" class="btn btn-ghost">Se referencer</a>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="band alt" id="about">
+    <div class="wrap about-grid reveal">
+      <figure class="about-figure">
+        <img src="villaogo.jpg" alt="Færdigt KILCON-byggeri set udefra" loading="lazy" />
+        <span class="frame-tag">FIG.01 — BYGHERRERÅDGIVNING</span>
+      </figure>
+      <div class="about-copy">
+        <p class="eyebrow tick">Om KILCON</p>
+        <h2 class="display-l">Praktisk erfaring og god dialog</h2>
+        <p class="lede">Med flere års erfaring både entreprenør, ingeniør og bygherre indenfor byggebranchen er KILCON stiftet med henblik på at samle alle byggeriets interessenter omkring oldschool værdier der bygger på god dialog mellem alle interessenter.</p>
+        <ul class="about-features">
+          <li><span class="n">01</span> Projektleder og ingeniør i én</li>
+          <li><span class="n">02</span> Erfaring fra megaprojekter</li>
+          <li><span class="n">03</span> Konkurrencedygtige tilbud</li>
+          <li><span class="n">04</span> Engageret i oldschool værdier</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Anmod om tilbud <span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 FEATURES -->
+  <section class="band" id="ydelser">
+    <div class="wrap">
+      <div class="band-head reveal">
+        <div class="titles">
+          <p class="eyebrow tick">Vores tilgang</p>
+          <h2 class="display-l">Fire grunde til at bygge med os</h2>
+        </div>
+        <span class="section-index">02 / KOMPETENCER</span>
+      </div>
+      <div class="feature-grid reveal">
+        <article class="feature-card">
+          <img class="feature-icon" src="listokarandash.PNG" alt="" loading="lazy" />
+          <h3>Projektering</h3>
+          <p>Vi tegner og dokumenterer løsningen, før første spadestik — så intet overlades til tilfældighederne.</p>
+          <span class="fnum">— 01</span>
+        </article>
+        <article class="feature-card">
+          <img class="feature-icon" src="kluch.PNG" alt="" loading="lazy" />
+          <h3>Udførsel</h3>
+          <p>Med entreprenørbaggrund styrer vi håndværket på pladsen med tæt opfølgning og fast kvalitetskontrol gennem hele forløbet.</p>
+          <span class="fnum">— 02</span>
+        </article>
+        <article class="feature-card">
+          <img class="feature-icon" src="kerameka.PNG" alt="" loading="lazy" />
+          <h3>Materialevalg</h3>
+          <p>Vi vejleder i robuste, holdbare materialer der passer til budgettet og holder i mange år.</p>
+          <span class="fnum">— 03</span>
+        </article>
+        <article class="feature-card">
+          <img class="feature-icon" src="molnia.PNG" alt="" loading="lazy" />
+          <h3>Hurtig respons</h3>
+          <p>Én kontaktperson og direkte dialog betyder, at beslutninger træffes hurtigt og misforståelser undgås.</p>
+          <span class="fnum">— 04</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="band alt" id="process">
+    <div class="wrap">
+      <div class="band-head reveal">
+        <div class="titles">
+          <p class="eyebrow tick">Arbejdsproces</p>
+          <h2 class="display-l">Fra forventning til aflevering</h2>
+        </div>
+        <span class="section-index">03 / METODE</span>
+      </div>
+      <div class="process reveal">
+        <div class="step">
+          <span class="trin">TRIN 1</span>
+          <div class="stepnum">01</div>
+          <h3>Forventningsafstemning</h3>
+          <p>Vi starter med god, oldschool dialog og afstemmer ambition, budget og rammer, så alle interessenter trækker i samme retning.</p>
+        </div>
+        <div class="step">
+          <span class="trin">TRIN 2</span>
+          <div class="stepnum">02</div>
+          <h3>Projektering &amp; optimering</h3>
+          <p>I ingeniørfasen optimerer vi løsningerne og finder besparelser, før de bliver dyre at ændre på pladsen.</p>
+        </div>
+        <div class="step">
+          <span class="trin">TRIN 3</span>
+          <div class="stepnum">03</div>
+          <h3>Effektiv styring</h3>
+          <p>Vi leder projektet stramt og løser udfordringerne, før de bliver til problemer — med fuld gennemsigtighed undervejs.</p>
+        </div>
+        <div class="step">
+          <span class="trin">TRIN 4</span>
+          <div class="stepnum">04</div>
+          <h3>Aflevering til aftalt tid</h3>
+          <p>Vi afleverer med høj faglighed og kvalitet — til den aftalte tid og uden løse ender.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section class="band" id="testimonial">
+    <div class="wrap quote-grid reveal">
+      <figure class="quote-figure">
+        <img src="baba.jpg" alt="Tilfreds KILCON-kunde" loading="lazy" />
+      </figure>
+      <div>
+        <div class="stars" aria-label="5 ud af 5 stjerner">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.6 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.6 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.6 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.6 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.6 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+        </div>
+        <blockquote class="quote-text">"Vi havde fornøjelsen af at have KILCON som bygherrerådgiver i forbindelse med opførelsen af vores nye hus. KILCON bød ind med optimeringsløsninger i projekteringsfasen der sparede os en del penge."</blockquote>
+        <p class="quote-author"><b>Anonym</b> &nbsp;|&nbsp; Greve, Danmark</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section class="band alt" id="references">
+    <div class="wrap">
+      <div class="ref-hero reveal">
+        <div class="titles">
+          <p class="eyebrow tick">Portfolio</p>
+          <h2 class="display-l">Reference&shy;projekter</h2>
+          <p class="lede">Vi sætter en ære i både projekteringen og udførslen af projekterne. Her er et udpluk af referenceprojekter.</p>
+        </div>
+        <img src="references.jpg" alt="Oversigt over KILCON referenceprojekter" loading="lazy" />
+      </div>
+
+      <div class="ref-subhead reveal">
+        <h3 class="display-m">Seneste projekter</h3>
+        <a href="#" class="btn btn-ghost">Se alle <span class="arr">→</span></a>
+      </div>
+
+      <div class="cards reveal">
+        <a href="#" class="proj-card">
+          <div class="pc-img"><img src="stena1.jpg" alt="Opførsel af 198m2 parcelhus" loading="lazy" /></div>
+          <div class="pc-body">
+            <span class="pc-date">27. JANUAR 2025</span>
+            <h4>Opførsel af 198m² parcelhus</h4>
+            <span class="pc-link">Læs mere <span class="arr">→</span></span>
+          </div>
+        </a>
+        <a href="#" class="proj-card">
+          <div class="pc-img"><img src="stena2.jpg" alt="Renovering" loading="lazy" /></div>
+          <div class="pc-body">
+            <span class="pc-date">27. JANUAR 2025</span>
+            <h4>Renovering</h4>
+            <span class="pc-link">Læs mere <span class="arr">→</span></span>
+          </div>
+        </a>
+        <a href="#" class="proj-card">
+          <div class="pc-img"><img src="stena3.jpg" alt="Tilbygning" loading="lazy" /></div>
+          <div class="pc-body">
+            <span class="pc-date">27. JANUAR 2025</span>
+            <h4>Tilbygning</h4>
+            <span class="pc-link">Læs mere <span class="arr">→</span></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="band" id="faq">
+    <div class="wrap faq-grid">
+      <div class="faq-side reveal">
+        <p class="eyebrow tick">FAQ</p>
+        <h2 class="display-l">Ofte stillede spørgsmål</h2>
+        <p>Få svar på det vigtigste, før vi mødes. Mangler du noget? Skriv til os — vi vender hurtigt tilbage.</p>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Hvordan sikrer I, at byggeprojektets budget overholdes?<span class="qx">+</span></button>
+          <div class="faq-a"><p>Gennem vores store erfaring inden for ingeniørarbejde og projektering optimerer vi løsningerne tidligt i processen. Det minimerer uforudsete udgifter under selve udførslen.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Hvem er min kontaktperson under forløbet?<span class="qx">+</span></button>
+          <div class="faq-a"><p>Hos KILCON får du en projektleder og ingeniør i én og samme person. Det sikrer direkte kommunikation, færre misforståelser og hurtig problemløsning baseret på god dialog.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Hvilke geografiske områder dækker I?<span class="qx">+</span></button>
+          <div class="faq-a"><p>Vi er baseret i Greve, men vi påtager os opgaver og dækker byggeprojekter på hele Sjælland, både for private og erhvervskunder.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <section class="contact" id="contact">
+    <img class="bg-img" src="domogo.jpg" alt="" loading="lazy" />
+    <div class="bg-fallback" aria-hidden="true"></div>
+
+    <div class="wrap contact-grid">
+      <div class="contact-intro reveal">
+        <p class="eyebrow tick">Vores ydelser</p>
+        <h2 class="display-l">Skal vi hjælpe dig? Modtag et tilbud</h2>
+        <p class="lede">Fortæl os kort om dit byggeprojekt, så vender vi tilbage med et konkurrencedygtigt tilbud og en ærlig vurdering.</p>
+        <div class="contact-list">
+          Rosengårdsminde, 2670 Greve<br>
+          <span>Vi dækker hele Sjælland</span><br>
+          +45 3131 1967<br>
+          ki@kilcon.dk
+        </div>
+      </div>
+
+      <div class="lead-form reveal">
+        <h3>Send os en besked</h3>
+        <form id="leadForm" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="navn">Navn</label>
+              <input id="navn" name="navn" type="text" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="efternavn">Efternavn</label>
+              <input id="efternavn" name="efternavn" type="text" autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="telefon">Telefonnummer</label>
+            <input id="telefon" name="telefon" type="tel" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="besked">Besked</label>
+            <textarea id="besked" name="besked" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send besked <span class="arr">→</span></button>
+          <p class="form-note">Vi svarer typisk inden for 1 hverdag.</p>
+        </form>
+      </div>
+    </div>
+
+    <div class="wrap foot-base">
+      <div class="foot-top">
+        <div>
+          <div class="foot-brand">KILCON</div>
+          <p>Construction · Contracting · Consulting. Med KILCON som din partner i byggeprojektet er du garanteret høj faglighed, med sans for kvalitet.</p>
+        </div>
+        <div class="socials">
+          <a href="#" aria-label="KILCON på Instagram">Instagram</a>
+          <a href="#" aria-label="KILCON på X">X</a>
+          <a href="#" aria-label="KILCON på YouTube">YouTube</a>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 KILCON · CVR 00000000</span>
+        <span>Rosengårdsminde, 2670 Greve · +45 3131 1967</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---- page-load blur reveal ---- */
+  var stage = document.getElementById("stage");
+
+  /* ---- hero video diagnostics ---- */
+  (function(){
+    var v = document.getElementById("heroVideo");
+    if(!v) return;
+    var src = v.querySelector("source");
+    v.addEventListener("error", function(){
+      console.warn("[KILCON] Видео не загрузилось. Проверь путь/регистр имени и кодек (нужен H.264+AAC):", src && src.src);
+    });
+    var s = src && src.firstChild; // no-op guard
+    if(src){
+      src.addEventListener("error", function(){
+        console.warn("[KILCON] Источник видео недоступен (вероятно 404):", src.src);
+      });
+    }
+    v.addEventListener("loadeddata", function(){
+      console.info("[KILCON] Видео загружено успешно.");
+    });
+    var p = v.play && v.play();
+    if(p && p.catch){ p.catch(function(){ /* autoplay заблокирован браузером — это нормально, ничего не делаем */ }); }
+  })();
+  window.addEventListener("load", function(){
+    requestAnimationFrame(function(){ stage.classList.add("is-ready"); });
+    // куки-баннер всплывает только ПОСЛЕ того, как сайт проявился из размытия (+~1 сек)
+    setTimeout(function(){
+      var ov = document.getElementById("cookieOverlay");
+      if(ov && !ov.classList.contains("dismissed")){
+        ov.classList.add("show");
+        document.body.classList.add("modal-open");
+      }
+    }, 2200);
+  });
+  // safety fallback if load is slow
+  setTimeout(function(){ stage.classList.add("is-ready"); }, 1500);
+
+  /* ---- toast helper ---- */
+  var toastEl = document.getElementById("toast"), toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 3200);
+  }
+
+  /* ---- cookie modal ---- */
+  var overlay = document.getElementById("cookieOverlay");
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".cookie-tab"));
+  var panels = { samtykke:"panel-samtykke", detaljer:"panel-detaljer", om:"panel-om" };
+
+  function selectTab(name){
+    tabs.forEach(function(t){
+      var on = t.dataset.tab === name;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    Object.keys(panels).forEach(function(key){
+      var p = document.getElementById(panels[key]);
+      var on = key === name;
+      p.classList.toggle("active", on);
+      if(on){ p.removeAttribute("hidden"); } else { p.setAttribute("hidden",""); }
+    });
+  }
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){ selectTab(t.dataset.tab); });
+  });
+
+  function closeCookie(){
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+  }
+
+  document.getElementById("ckAllowAll").addEventListener("click", function(){
+    document.querySelectorAll('.toggles input[data-cat]').forEach(function(i){ i.checked = true; });
+    closeCookie(); toast("Alle cookies accepteret");
+  });
+  document.getElementById("ckAllowSelected").addEventListener("click", function(){
+    closeCookie(); toast("Dine valg er gemt");
+  });
+  document.getElementById("ckDeny").addEventListener("click", function(){
+    document.querySelectorAll('.toggles input[data-cat]').forEach(function(i){ i.checked = false; });
+    closeCookie(); toast("Kun nødvendige cookies");
+  });
+
+  /* ---- sticky header state ---- */
+  var head = document.getElementById("siteHead");
+  function onScroll(){ head.classList.toggle("scrolled", window.scrollY > 40); }
+  window.addEventListener("scroll", onScroll, {passive:true}); onScroll();
+
+  /* ---- FAQ accordion ---- */
+  document.querySelectorAll(".faq-item").forEach(function(item){
+    var btn = item.querySelector(".faq-q");
+    var ans = item.querySelector(".faq-a");
+    btn.addEventListener("click", function(){
+      var open = item.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      ans.style.maxHeight = open ? ans.scrollHeight + "px" : null;
+    });
+  });
+
+  /* ---- scroll reveal ---- */
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, {threshold:.14, rootMargin:"0px 0px -8% 0px"});
+    document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+
+  /* ---- lead form ---- */
+  document.getElementById("leadForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!this.checkValidity()){ toast("Udfyld venligst de påkrævede felter"); this.reportValidity(); return; }
+    this.reset();
+    toast("Tak — din besked er sendt");
+  });
+})();
+</script>
+</body>
+</html>
